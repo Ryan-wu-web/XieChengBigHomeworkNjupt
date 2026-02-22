@@ -44,7 +44,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException("用户名已存在");
         }
         if(StrUtil.isBlank(user.getRole())){
-            user.setRole("MERCHANT"); // Default to merchant if not specified or handle in controller
+            user.setRole("CONSUMER"); // Default to consumer for Android app users
         }
         save(user);
     }
@@ -183,5 +183,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         user.setStatus(status);
         updateById(user);
+    }
+
+    @Override
+    public IPage<User> getConsumerList(Integer pageNum, Integer pageSize, String username) {
+        Page<User> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("role", "CONSUMER");
+        if (StrUtil.isNotBlank(username)) {
+            queryWrapper.like("username", username);
+        }
+        queryWrapper.orderByDesc("create_time");
+        IPage<User> result = page(page, queryWrapper);
+        // 隐藏密码
+        result.getRecords().forEach(user -> user.setPassword(null));
+        return result;
     }
 }

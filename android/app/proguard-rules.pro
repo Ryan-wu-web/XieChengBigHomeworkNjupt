@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# 高德地图 SDK - 解决重复类冲突
+# 保留 search 模块中的类，忽略 location 模块中的重复类
+-keep class com.amap.apis.utils.core.api.AMapUtilCoreApi { *; }
+-keep class com.amap.apis.utils.core.api.NetProxy { *; }
+-dontwarn com.amap.apis.utils.core.api.**

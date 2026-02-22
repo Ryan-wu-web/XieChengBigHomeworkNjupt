@@ -38,13 +38,20 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.BannerView
         Banner banner = banners.get(position);
         
         if (banner.imageUrl != null && !banner.imageUrl.isEmpty()) {
+            // Replace localhost with 10.0.2.2 for Android emulator if needed
+            String imageUrl = banner.imageUrl;
+            if (imageUrl.contains("localhost")) {
+                imageUrl = imageUrl.replace("localhost", "10.0.2.2");
+            }
+            
             Glide.with(holder.itemView.getContext())
-                    .load(banner.imageUrl)
+                    .load(imageUrl)
                     .placeholder(R.color.primary_blue)
                     .error(R.color.primary_blue)
                     .centerCrop()
                     .into(holder.imageView);
         } else {
+            holder.imageView.setImageResource(android.R.color.transparent);
             holder.imageView.setBackgroundColor(holder.itemView.getContext().getResources().getColor(R.color.primary_blue));
         }
 

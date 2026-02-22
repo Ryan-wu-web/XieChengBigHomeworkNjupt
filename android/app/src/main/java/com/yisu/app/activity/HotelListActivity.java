@@ -55,6 +55,10 @@ public class HotelListActivity extends AppCompatActivity {
 
         // Get intent data
         keyword = getIntent().getStringExtra("keyword");
+        String intentCity = getIntent().getStringExtra("city");
+        if (intentCity != null) {
+            city = intentCity;
+        }
         long checkInMillis = getIntent().getLongExtra("checkInDate", 0);
         long checkOutMillis = getIntent().getLongExtra("checkOutDate", 0);
         starRating = getIntent().getStringExtra("starRating");
@@ -95,9 +99,10 @@ public class HotelListActivity extends AppCompatActivity {
             etListSearch.setText(keyword);
         }
         
+        tvCity.setText(city);
         tvCity.setOnClickListener(v -> {
-            // City selection dialog (simplified)
-            Toast.makeText(this, "城市选择功能", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(HotelListActivity.this, LocationSearchActivity.class);
+            startActivityForResult(intent, 100);
         });
         
         tvListCheckIn.setOnClickListener(v -> showDatePicker(true));
@@ -263,5 +268,23 @@ public class HotelListActivity extends AppCompatActivity {
             }
         }
         return filtered;
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
+            String newCity = data.getStringExtra("city");
+            if (newCity != null) {
+                city = newCity;
+                tvCity.setText(city);
+                // 重新加载数据
+                currentPage = 1;
+                hasMore = true;
+                hotelList.clear();
+                adapter.notifyDataSetChanged();
+                loadData(1, true);
+            }
+        }
     }
 }

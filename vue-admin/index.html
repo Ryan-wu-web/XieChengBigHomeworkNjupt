@@ -5,6 +5,14 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>vue-admin</title>
+    <!-- 高德地图API - Web端（JS API）密钥 -->
+    <!-- 申请地址：https://console.amap.com/dev/key/app -->
+    <script type="text/javascript">
+      window._AMapSecurityConfig = {
+        securityJsCode: '30cd1067f300c085287393c2acf554f9'
+      }
+    </script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=fb021eba81e5a388255189f93ce6b71c&plugin=AMap.PlaceSearch,AMap.Geocoder"></script>
   </head>
   <body>
     <div id="app"></div>

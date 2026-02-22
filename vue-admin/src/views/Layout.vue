@@ -26,6 +26,14 @@
             <el-icon><User /></el-icon>
             <span>酒店账号管理</span>
           </el-menu-item>
+          <el-menu-item index="/dashboard/consumer-manage" v-if="user.role === 'ADMIN'">
+            <el-icon><UserFilled /></el-icon>
+            <span>消费者用户管理</span>
+          </el-menu-item>
+          <el-menu-item index="/dashboard/banner-manage" v-if="user.role === 'ADMIN'">
+            <el-icon><Picture /></el-icon>
+            <span>广告轮播图管理</span>
+          </el-menu-item>
         </el-menu>
       </el-aside>
       
@@ -74,7 +82,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { House, Plus, OfficeBuilding, ArrowDown, UserFilled, User } from '@element-plus/icons-vue'
+import { House, Plus, OfficeBuilding, ArrowDown, UserFilled, User, Picture } from '@element-plus/icons-vue'
 
 const router = useRouter()
 

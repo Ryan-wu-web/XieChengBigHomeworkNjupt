@@ -40,7 +40,8 @@ public class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeAdapter.ViewHo
         RoomType room = roomTypes.get(position);
         holder.tvRoomName.setText(room.name);
         holder.tvRoomDesc.setText(room.description != null ? room.description : "");
-        holder.tvRoomPrice.setText("¥" + room.price);
+        // 价格显示为整数
+        holder.tvRoomPrice.setText(String.valueOf((int)room.price));
         holder.tvRoomStock.setText("库存: " + room.stock);
     }
 

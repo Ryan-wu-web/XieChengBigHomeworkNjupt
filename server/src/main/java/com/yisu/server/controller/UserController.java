@@ -276,4 +276,30 @@ public class UserController {
             return Result.error(e.getMessage());
         }
     }
+
+    // Admin: Get consumer list
+    @GetMapping("/admin/consumer-list")
+    public Result<IPage<User>> getConsumerList(@RequestHeader(value = "Authorization", required = false) String authHeader,
+                                               @RequestParam(defaultValue = "1") Integer pageNum,
+                                               @RequestParam(defaultValue = "10") Integer pageSize,
+                                               @RequestParam(required = false) String username) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return Result.error("未登录");
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtils.getClaimsByToken(token);
+            if (claims == null) {
+                return Result.error("Token无效");
+            }
+            String role = (String) claims.get("role");
+            if (!"ADMIN".equals(role)) {
+                return Result.error("无权限访问");
+            }
+            IPage<User> page = userService.getConsumerList(pageNum, pageSize, username);
+            return Result.success(page);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
 }

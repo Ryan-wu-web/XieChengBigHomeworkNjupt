@@ -21,7 +21,7 @@
     <el-card class="table-card" shadow="never" style="margin-top: 16px">
       <template #header>
         <div class="card-header">
-          <span>酒店账号管理</span>
+          <span>消费者用户管理</span>
         </div>
       </template>
       
@@ -31,56 +31,7 @@
         border 
         stripe 
         style="width: 100%"
-        row-key="id"
-        @expand-change="handleExpand"
       >
-        <el-table-column type="expand">
-          <template #default="scope">
-            <div class="expand-content" v-if="scope.row.hotels">
-              <div class="hotel-summary">
-                <el-tag type="info">酒店总数：{{ scope.row.hotels.hotelCount || 0 }}</el-tag>
-                <el-tag type="info" style="margin-left: 10px;">房间总数：{{ scope.row.hotels.totalRoomCount || 0 }}</el-tag>
-              </div>
-              <el-table :data="scope.row.hotels.hotels || []" border size="small" style="margin-top: 10px;">
-                <el-table-column prop="name" label="酒店名称" width="200" />
-                <el-table-column prop="city" label="城市" width="100" />
-                <el-table-column prop="starRating" label="星级" width="80" />
-                <el-table-column prop="status" label="状态" width="100">
-                  <template #default="hotelScope">
-                    <el-tag :type="getStatusType(hotelScope.row.status)" size="small">
-                      {{ getStatusText(hotelScope.row.status) }}
-                    </el-tag>
-                  </template>
-                </el-table-column>
-                <el-table-column prop="roomCount" label="房间数" width="80" align="center" />
-                <el-table-column prop="minPrice" label="最低价" width="100" align="center">
-                  <template #default="hotelScope">
-                    ¥ {{ hotelScope.row.minPrice || 0 }}
-                  </template>
-                </el-table-column>
-                <el-table-column label="房间列表" min-width="300">
-                  <template #default="hotelScope">
-                    <div class="room-list">
-                      <el-tag 
-                        v-for="room in hotelScope.row.rooms" 
-                        :key="room.id" 
-                        size="small" 
-                        style="margin-right: 5px; margin-bottom: 5px;"
-                      >
-                        {{ room.name }} - ¥{{ room.price }}
-                      </el-tag>
-                      <span v-if="!hotelScope.row.rooms || hotelScope.row.rooms.length === 0" style="color: #909399;">暂无房间</span>
-                    </div>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
-            <div v-else class="expand-loading">
-              <el-icon class="is-loading"><Loading /></el-icon>
-              <span style="margin-left: 10px;">加载中...</span>
-            </div>
-          </template>
-        </el-table-column>
         <el-table-column prop="id" label="ID" width="80" align="center" />
         <el-table-column prop="username" label="用户名" width="150" align="center" />
         <el-table-column label="头像" width="100" align="center">
@@ -92,9 +43,7 @@
         <el-table-column prop="email" label="邮箱" width="200" align="center" />
         <el-table-column prop="role" label="角色" width="100" align="center">
           <template #default="scope">
-            <el-tag :type="scope.row.role === 'ADMIN' ? 'danger' : 'primary'">
-              {{ scope.row.role === 'ADMIN' ? '管理员' : '商户' }}
-            </el-tag>
+            <el-tag type="success">消费者</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100" align="center">
@@ -116,6 +65,7 @@
             >
               {{ scope.row.status === 1 ? '启用' : '禁用' }}
             </el-button>
+            <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -177,13 +127,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import request from '../../utils/request'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Edit, Delete, UserFilled, Check, Close, Loading, Plus } from '@element-plus/icons-vue'
+import { Edit, Delete, UserFilled, Check, Close, Plus } from '@element-plus/icons-vue'
 import type { FormInstance, FormRules } from 'element-plus'
 
 const loading = ref(false)
 const tableData = ref([])
 const total = ref(0)
-const expandedRows = ref<number[]>([])
 const editDialogVisible = ref(false)
 const editFormRef = ref<FormInstance>()
 const editForm = reactive({
@@ -200,7 +149,6 @@ const query = reactive({
   username: ''
 })
 
-// 上传请求头（包含 token）
 const uploadHeaders = ref({
   Authorization: `Bearer ${localStorage.getItem('token') || ''}`
 })
@@ -219,7 +167,7 @@ const rules = reactive<FormRules>({
 
 const loadData = () => {
   loading.value = true
-  request.get('/user/admin/merchant-list', { params: query }).then((res: any) => {
+  request.get('/user/admin/consumer-list', { params: query }).then((res: any) => {
     tableData.value = res.records
     total.value = res.total
   }).catch((error: any) => {
@@ -267,69 +215,40 @@ const saveEdit = async () => {
 }
 
 const handleToggleStatus = (row: any) => {
-  const action = row.status === 1 ? '启用' : '禁用'
+  const newStatus = row.status === 1 ? 0 : 1
+  request.put('/user/admin/status', {
+    userId: row.id,
+    status: newStatus
+  }).then(() => {
+    ElMessage.success('状态更新成功')
+    loadData()
+  }).catch((error: any) => {
+    ElMessage.error('状态更新失败：' + (error.message || '未知错误'))
+  })
+}
+
+const handleDelete = (row: any) => {
   ElMessageBox.confirm(
-    `确定要${action}用户 "${row.username}" 吗？`,
-    `${action}确认`,
+    `确定要删除用户 "${row.username}" 吗？`,
+    '删除确认',
     {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
     }
   ).then(() => {
-    const newStatus = row.status === 1 ? 0 : 1
-    request.put('/user/admin/status', {
-      userId: row.id,
-      status: newStatus
-    }).then(() => {
-      ElMessage.success(`${action}成功`)
+    request.delete(`/user/admin/${row.id}`).then(() => {
+      ElMessage.success('删除成功')
       loadData()
     }).catch((error: any) => {
-      ElMessage.error(`${action}失败：` + (error.message || '未知错误'))
+      ElMessage.error('删除失败：' + (error.message || '未知错误'))
     })
   }).catch(() => {
     // 用户取消
   })
 }
 
-const handleExpand = (row: any, expandedRows: any) => {
-  if (expandedRows.length > 0 && !row.hotels) {
-    // 展开时加载酒店和房间数据
-    loadUserHotels(row)
-  }
-}
-
-const loadUserHotels = (row: any) => {
-  request.get(`/user/admin/${row.id}/hotels`).then((res: any) => {
-    row.hotels = res
-  }).catch((error: any) => {
-    ElMessage.error('加载酒店信息失败：' + (error.message || '未知错误'))
-  })
-}
-
-const getStatusType = (status: number) => {
-  switch (status) {
-    case 0: return 'warning'
-    case 1: return 'success'
-    case 2: return 'info'
-    case 3: return 'danger'
-    default: return ''
-  }
-}
-
-const getStatusText = (status: number) => {
-  switch (status) {
-    case 0: return '审核中'
-    case 1: return '已发布'
-    case 2: return '已下线'
-    case 3: return '未通过'
-    default: return '未知'
-  }
-}
-
-// 头像上传成功
 const handleAvatarSuccess = (response: any) => {
-  // el-upload 使用原生 XMLHttpRequest，返回的是完整的 Result 对象
   if (response && response.code === '200') {
     editForm.avatar = response.data
     ElMessage.success('头像上传成功')
@@ -338,15 +257,11 @@ const handleAvatarSuccess = (response: any) => {
   }
 }
 
-// 头像上传失败
-const handleAvatarError = (error: any) => {
-  console.error('头像上传错误:', error)
-  ElMessage.error('头像上传失败，请检查网络连接或稍后重试')
+const handleAvatarError = () => {
+  ElMessage.error('头像上传失败，请检查网络或文件格式')
 }
 
-// 头像上传前验证
 const beforeAvatarUpload = (file: File) => {
-  console.log('准备上传文件:', file.name, file.type, file.size)
   const isJPG = file.type === 'image/jpeg' || file.type === 'image/png'
   const isLt2M = file.size / 1024 / 1024 < 2
 
@@ -358,7 +273,6 @@ const beforeAvatarUpload = (file: File) => {
     ElMessage.error('头像大小不能超过 2MB!')
     return false
   }
-  // 更新 headers 中的 token（防止 token 过期）
   uploadHeaders.value.Authorization = `Bearer ${localStorage.getItem('token') || ''}`
   return true
 }
@@ -386,34 +300,6 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
-.search-card {
-  margin-bottom: 16px;
-}
-
-.search-form {
-  margin: 0;
-}
-
-.expand-content {
-  padding: 10px;
-}
-
-.hotel-summary {
-  margin-bottom: 10px;
-}
-
-.room-list {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.expand-loading {
-  padding: 20px;
-  text-align: center;
-  color: #909399;
-}
-
 .avatar-upload {
   display: flex;
   flex-direction: column;
@@ -436,14 +322,6 @@ onMounted(() => {
 
 .avatar-uploader:hover {
   border-color: #409EFF;
-}
-
-.avatar-uploader :deep(.el-upload) {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .avatar {

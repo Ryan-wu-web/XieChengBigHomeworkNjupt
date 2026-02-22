@@ -48,6 +48,16 @@ const router = createRouter({
           path: 'user-manage',
           component: () => import('../views/user/List.vue'),
           meta: { title: '酒店账号管理' }
+        },
+        {
+          path: 'consumer-manage',
+          component: () => import('../views/user/ConsumerList.vue'),
+          meta: { title: '消费者用户管理' }
+        },
+        {
+          path: 'banner-manage',
+          component: () => import('../views/banner/List.vue'),
+          meta: { title: '广告轮播图管理' }
         }
       ]
     }

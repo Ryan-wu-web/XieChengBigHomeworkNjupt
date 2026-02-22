@@ -11,7 +11,46 @@
         android:id="@+id/viewPagerBanner"
         android:layout_width="match_parent"
         android:layout_height="220dp"
+        android:background="#2196F3"
         app:layout_constraintTop_toTopOf="parent" />
+    
+    <!-- User Info and Logout Button -->
+    <LinearLayout
+        android:id="@+id/llUserInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical|end"
+        android:padding="12dp"
+        android:background="#40000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+        
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="用户名"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="12dp"/>
+        
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="退出登录"
+            android:textSize="12sp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:backgroundTint="#F44336"
+            android:textColor="#FFFFFF"
+            android:minWidth="0dp"
+            android:minHeight="0dp"/>
+    </LinearLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutBanner"
@@ -24,38 +63,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/tvAppTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="易宿旅行"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="发现理想的住宿体验"
-        android:textColor="#E0E0E0"
-        android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@id/tvAppTitle"
-        app:layout_constraintStart_toStartOf="@id/tvAppTitle" />
-
     <!-- Search Card -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardSearch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
         app:cardCornerRadius="12dp"
         app:cardElevation="8dp"
-        app:layout_constraintTop_toBottomOf="@id/viewPagerBanner"
-        app:layout_constraintBottom_toBottomOf="@id/viewPagerBanner">
+        app:layout_constraintTop_toBottomOf="@id/viewPagerBanner">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -189,62 +207,68 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="8dp"/>
             
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupTags"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:chipSpacing="8dp"
-                app:chipSpacingVertical="8dp">
+                android:scrollbars="none"
+                android:fadeScrollbars="false">
                 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipStar5"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupTags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="5星"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-                
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipStar4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="4星"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-                
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipPriceLow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="经济型"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-                
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipPriceMid"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="舒适型"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-                
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipTagFamily"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="亲子"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-                
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipTagLuxury"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="豪华"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-                
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipTagParking"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="免费停车"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"/>
-            </com.google.android.material.chip.ChipGroup>
+                    android:orientation="horizontal"
+                    app:chipSpacing="8dp"
+                    app:singleSelection="false"
+                    app:selectionRequired="false">
+                    
+                    <!-- 星级筛选（固定） -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipStar5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="5星"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                    
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipStar4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="4星"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                    
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipStar3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3星"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                    
+                    <!-- 价格范围筛选（固定） -->
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPriceLow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="经济型"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                    
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPriceMid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="舒适型"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                    
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPriceHigh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="豪华型"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"/>
+                    
+                    <!-- 动态标签将通过代码添加 -->
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
 
             <Button
                 android:id="@+id/btnSearch"

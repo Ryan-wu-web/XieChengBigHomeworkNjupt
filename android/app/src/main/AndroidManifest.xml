@@ -2,9 +2,32 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!--用于访问网络，网络定位需要上网-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--用于访问GPS定位-->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <!--用于申请调用A-GPS模块-->
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <!--如果设置了target >= 28 如果需要启动后台定位则必须声明这个权限-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <!--如果您的应用需要后台定位权限，且有可能运行在Android Q设备上,并且设置了target>28，必须增加这个权限声明-->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <!--用于获取运营商信息-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--存储权限（如果需要）-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".YisuApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,6 +38,24 @@
         android:theme="@style/Theme.YisuApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        
+        <!-- 高德地图 API Key -->
+        <!-- 当前 Key: 7b5299ccfa2d42185da30c989007c4e6 -->
+        <!-- 如果遇到 KEY 错误，请检查： -->
+        <!-- 1. 高德平台中 Key 的平台类型必须是 "Android 平台" -->
+        <!-- 2. PackageName 必须是 "com.yisu.app" -->
+        <!-- 3. SHA1 必须是 "1B:4D:76:7A:D8:C5:72:73:B0:AC:A7:19:13:13:E4:6D:20:13:16:86" -->
+        <!-- 4. 查看 Logcat 中的详细错误信息（过滤标签：LocationSearch） -->
+        <!-- 详细排查步骤请参考：android/KEY错误快速排查清单.md -->
+        <!-- 高德地图 API Key -->
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="827b6872ba0a28517707aac4c868be00" />
+        
+        <!-- 高德定位 Service 组件 -->
+        <!-- 每个app拥有自己单独的定位service -->
+        <service android:name="com.amap.api.location.APSService" />
+        
         <activity
             android:name=".activity.LoginActivity"
             android:exported="true">
@@ -27,7 +68,10 @@
         <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.HotelListActivity" />
-        <activity android:name=".activity.HotelDetailActivity" />
+        <activity 
+            android:name=".activity.HotelDetailActivity"
+            android:theme="@style/Theme.YisuApp.NoActionBar" />
+        <activity android:name=".activity.LocationSearchActivity" />
     </application>
 
 </manifest>

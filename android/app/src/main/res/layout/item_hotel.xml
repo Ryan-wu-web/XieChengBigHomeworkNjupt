@@ -4,118 +4,179 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    android:layout_marginLeft="4dp"
-    android:layout_marginRight="4dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
     android:layout_marginTop="4dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="0dp">
 
+        <!-- 左侧封面图片 -->
         <ImageView
             android:id="@+id/ivHotelImage"
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_background"
             android:background="#E0E0E0"/>
 
+        <!-- 右侧信息区域 -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="12dp"
+            android:gravity="top">
 
+            <!-- 酒店名称 -->
             <TextView
                 android:id="@+id/tvHotelName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hotel Name"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#333"/>
-
-            <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="酒店名称"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#333333"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:lineSpacingMultiplier="1.2"/>
+
+            <!-- 评分、点评数、收藏数 -->
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="8dp">
+
+                <!-- 评分（蓝色背景） -->
                 <TextView
-                    android:id="@+id/tvStarRating"
+                    android:id="@+id/tvRating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="5星"
+                    android:text="4.6 很好"
                     android:textSize="12sp"
-                    android:textColor="#FF9800"
-                    android:background="#FFF3E0"
+                    android:textColor="#FFFFFF"
+                    android:background="#2196F3"
                     android:paddingStart="6dp"
                     android:paddingEnd="6dp"
                     android:paddingTop="2dp"
                     android:paddingBottom="2dp"/>
-                
+
+                <!-- 点评数 -->
                 <TextView
-                    android:id="@+id/tvCity"
+                    android:id="@+id/tvReviewCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="北京"
+                    android:text="811点评"
                     android:textSize="12sp"
-                    android:layout_marginStart="8dp"
-                    android:textColor="#666"/>
+                    android:textColor="#666666"
+                    android:layout_marginStart="8dp"/>
+
+                <!-- 收藏数 -->
+                <TextView
+                    android:id="@+id/tvFavoriteCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3296收藏"
+                    android:textSize="12sp"
+                    android:textColor="#666666"
+                    android:layout_marginStart="8dp"/>
             </LinearLayout>
 
+            <!-- 描述/位置信息 -->
             <TextView
-                android:id="@+id/tvExtraInfo"
-                android:layout_width="wrap_content"
+                android:id="@+id/tvDescription"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="点评10 · 收藏5"
+                android:text="近上海国际赛车场·上海保利大剧院 服务热情,环境干净整洁卫生舒适"
                 android:textSize="12sp"
-                android:textColor="#4CAF50"
+                android:textColor="#666666"
                 android:layout_marginTop="6dp"
-                android:visibility="gone"/>
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:lineSpacingMultiplier="1.2"/>
 
+            <!-- 设施标签 -->
+            <LinearLayout
+                android:id="@+id/llFacilities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical">
+
+                <!-- 标签将通过代码动态添加 -->
+            </LinearLayout>
+
+            <!-- 价格和会员优惠 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:gravity="bottom">
-                
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="超赞体验 · 设施齐全"
-                    android:textSize="12sp"
-                    android:textColor="#4CAF50"/>
+                android:gravity="bottom|end"
+                android:layout_marginTop="8dp">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="¥"
-                    android:textColor="#F44336"
-                    android:textSize="14sp"
-                    android:textStyle="bold"/>
-                <TextView
-                    android:id="@+id/tvPrice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="299"
-                    android:textColor="#F44336"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="2dp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="起"
-                    android:textColor="#999"
-                    android:textSize="12sp"
-                    android:layout_marginStart="2dp"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical|end">
+
+                    <!-- 原价（划掉） -->
+                    <TextView
+                        android:id="@+id/tvOriginalPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="¥193"
+                        android:textSize="12sp"
+                        android:textColor="#999999"
+                        android:layout_marginEnd="4dp"
+                        android:visibility="gone"/>
+
+                    <!-- 现价 -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="¥"
+                        android:textColor="#2196F3"
+                        android:textSize="14sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/tvPrice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="183"
+                        android:textColor="#2196F3"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="起"
+                        android:textColor="#999999"
+                        android:textSize="12sp"
+                        android:layout_marginStart="2dp"/>
+                </LinearLayout>
             </LinearLayout>
+
+            <!-- 会员优惠提示 -->
+            <TextView
+                android:id="@+id/tvMemberDiscount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="会员出行 优惠10 >"
+                android:textSize="11sp"
+                android:textColor="#FF9800"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

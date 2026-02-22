@@ -61,3 +61,23 @@ CREATE TABLE IF NOT EXISTS `hotel_favorite` (
 
 -- 8) 用户表添加状态字段
 ALTER TABLE `sys_user` ADD COLUMN `status` int NULL DEFAULT 0 COMMENT '0:正常, 1:禁用' AFTER `role`;
+
+-- 9) 酒店表添加经纬度字段（用于地图定位）
+ALTER TABLE `hotel` ADD COLUMN `latitude` decimal(10, 7) NULL COMMENT '纬度' AFTER `address`;
+ALTER TABLE `hotel` ADD COLUMN `longitude` decimal(10, 7) NULL COMMENT '经度' AFTER `latitude`;
+
+-- 10) 创建首页Banner广告表
+CREATE TABLE IF NOT EXISTS `banner` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Banner标题',
+  `image_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Banner图片URL',
+  `hotel_id` int NOT NULL COMMENT '关联酒店ID（点击跳转到该酒店详情）',
+  `sort_order` int NULL DEFAULT 0 COMMENT '排序顺序（数字越小越靠前）',
+  `status` int NULL DEFAULT 1 COMMENT '0:禁用, 1:启用',
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_hotel_id` (`hotel_id`) USING BTREE,
+  INDEX `idx_status` (`status`) USING BTREE,
+  INDEX `idx_sort_order` (`sort_order`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic COMMENT = '首页Banner广告表';

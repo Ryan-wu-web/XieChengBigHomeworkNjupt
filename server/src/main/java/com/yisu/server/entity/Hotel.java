@@ -15,6 +15,8 @@ public class Hotel {
     private String name;
     private String nameEn; // 英文名称
     private String address;
+    private BigDecimal latitude; // 纬度
+    private BigDecimal longitude; // 经度
     private String starRating; // 1-5星
     private String description;
     private String surroundings; // 周边环境：景点、交通、商场

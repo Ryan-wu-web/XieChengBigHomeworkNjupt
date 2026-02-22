@@ -29,14 +29,34 @@
                 android:textStyle="bold"
                 android:textColor="#333"/>
 
-            <TextView
-                android:id="@+id/tvRoomPrice"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¥299"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#F44336"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical|end">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¥"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#2196F3"/>
+                <TextView
+                    android:id="@+id/tvRoomPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="299"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#2196F3"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="/晚"
+                    android:textSize="12sp"
+                    android:textColor="#999"
+                    android:layout_marginStart="2dp"/>
+            </LinearLayout>
         </LinearLayout>
 
         <TextView

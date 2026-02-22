@@ -42,18 +42,31 @@
                             </el-form-item>
                         </el-col>
                     </el-row>
-                    <el-row>
-                        <el-col :span="12">
-                            <el-form-item label="所在城市" required>
-                                <el-input v-model="form.city" placeholder="例如：北京" />
-                            </el-form-item>
-                        </el-col>
-                        <el-col :span="12">
-                            <el-form-item label="详细地址" required>
-                                <el-input v-model="form.address" placeholder="请输入详细地址" />
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
+                    <el-form-item label="酒店位置" required>
+                        <div class="location-selector">
+                            <el-input 
+                                v-model="locationSearchText" 
+                                placeholder="搜索地点（如：北京市朝阳区建国门外大街1号）"
+                                clearable
+                                @keyup.enter="searchLocation"
+                                style="margin-bottom: 10px;"
+                            >
+                                <template #append>
+                                    <el-button @click="searchLocation" :icon="Search">搜索</el-button>
+                                </template>
+                            </el-input>
+                            <div id="map-container" style="width: 100%; height: 400px; border: 1px solid #dcdfe6; border-radius: 4px;"></div>
+                            <div class="location-info" v-if="form.latitude && form.longitude">
+                                <el-tag type="success" style="margin-top: 10px;">
+                                    <el-icon><Location /></el-icon>
+                                    已选择位置：{{ form.address }} ({{ form.city }})
+                                </el-tag>
+                                <div style="margin-top: 5px; font-size: 12px; color: #909399;">
+                                    经纬度：{{ form.latitude }}, {{ form.longitude }}
+                                </div>
+                            </div>
+                        </div>
+                    </el-form-item>
                     <el-form-item label="酒店描述">
                         <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入酒店特色描述" />
                     </el-form-item>
@@ -150,11 +163,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick, onUnmounted } from 'vue'
 import request from '../../utils/request'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import { Plus, Search, Location } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -173,6 +186,8 @@ const form = reactive({
   nameEn: '',
   city: '',
   address: '',
+  latitude: null as number | null,
+  longitude: null as number | null,
   starRating: '',
   openDate: '',
   description: '',
@@ -186,15 +201,211 @@ const form = reactive({
   images: '' // JSON string
 })
 
+const locationSearchText = ref('')
+let map: any = null
+let marker: any = null
+let placeSearch: any = null
+let geocoder: any = null
+
 onMounted(() => {
   if (isEdit.value) {
     loadHotel(route.params.id)
   }
+  nextTick(() => {
+    initMap()
+  })
 })
+
+onUnmounted(() => {
+  if (map) {
+    map.destroy()
+  }
+})
+
+const initMap = () => {
+  if (typeof AMap === 'undefined') {
+    ElMessage.warning('地图API加载失败，请检查网络连接或联系管理员配置地图密钥')
+    return
+  }
+  
+  // 初始化地图
+  const center = form.longitude && form.latitude 
+    ? [form.longitude, form.latitude] 
+    : [116.397428, 39.90923] // 默认北京天安门
+  
+  map = new AMap.Map('map-container', {
+    zoom: form.longitude && form.latitude ? 15 : 11,
+    center: center,
+    mapStyle: 'amap://styles/normal'
+  })
+  
+  // 初始化地点搜索
+  placeSearch = new AMap.PlaceSearch({
+    map: map,
+    pageSize: 10
+  })
+  
+  // 初始化地理编码
+  geocoder = new AMap.Geocoder({
+    city: '全国'
+  })
+  
+  // 如果已有位置，添加标记
+  if (form.longitude && form.latitude) {
+    addMarker([form.longitude, form.latitude])
+  }
+  
+  // 地图点击事件
+  map.on('click', (e: any) => {
+    const lng = e.lnglat.getLng()
+    const lat = e.lnglat.getLat()
+    addMarker([lng, lat])
+    reverseGeocode(lng, lat)
+  })
+}
+
+const addMarker = (position: number[]) => {
+  if (marker) {
+    marker.setPosition(position)
+  } else {
+    marker = new AMap.Marker({
+      position: position,
+      draggable: true
+    })
+    map.add(marker)
+    
+    // 标记拖拽事件
+    marker.on('dragend', () => {
+      const pos = marker.getPosition()
+      reverseGeocode(pos.getLng(), pos.getLat())
+    })
+  }
+  map.setCenter(position)
+  map.setZoom(15)
+}
+
+const reverseGeocode = (lng: number, lat: number) => {
+  geocoder.getAddress([lng, lat], (status: string, result: any) => {
+    if (status === 'complete' && result.info === 'OK') {
+      const addressComponent = result.regeocode.addressComponent
+      form.longitude = lng
+      form.latitude = lat
+      // 只保存市级别，去掉区县等更细的级别
+      // addressComponent.city 是市级别（如：北京市、上海市）
+      // 如果city为空，使用province（省级别）作为后备
+      let cityName = addressComponent.city || addressComponent.province || ''
+      // 去掉"市"、"省"等后缀，统一格式
+      if (cityName) {
+        cityName = cityName.replace(/市$/, '').replace(/省$/, '')
+      }
+      form.city = cityName
+      form.address = result.regeocode.formattedAddress || `${addressComponent.district}${addressComponent.street}${addressComponent.streetNumber}`
+      ElMessage.success('位置已选择')
+    } else {
+      // 检查是否是API密钥错误
+      if (result && result.info) {
+        if (result.info === 'USERKEY_PLAT_NOMATCH' || result.infocode === '10009') {
+          ElMessage.error({
+            message: 'API密钥类型不匹配！请确保申请的是"Web端（JS API）"类型的密钥。',
+            duration: 5000
+          })
+        } else if (result.info === 'INVALID_USER_SCODE' || result.infocode === '10008') {
+          ElMessage.error({
+            message: '安全密钥无效！请检查安全密钥是否正确配置在 index.html 中。',
+            duration: 5000
+          })
+        } else {
+          ElMessage.error('获取地址信息失败：' + result.info + (result.infocode ? ' (错误代码：' + result.infocode + ')' : ''))
+        }
+      } else {
+        ElMessage.error('获取地址信息失败')
+      }
+    }
+  })
+}
+
+const searchLocation = () => {
+  if (!locationSearchText.value.trim()) {
+    ElMessage.warning('请输入搜索关键词')
+    return
+  }
+  
+  if (!placeSearch) {
+    ElMessage.error('地图未初始化')
+    return
+  }
+  
+  placeSearch.search(locationSearchText.value, (status: string, result: any) => {
+    if (status === 'complete' && result.poiList && result.poiList.pois.length > 0) {
+      const poi = result.poiList.pois[0]
+      const location = poi.location
+      addMarker([location.lng, location.lat])
+      form.longitude = location.lng
+      form.latitude = location.lat
+      // 只保存市级别，去掉区县等更细的级别
+      // poi.cityname 是市级别（如：北京市、上海市）
+      // poi.adname 可能是区县级别（如：朝阳区、定南县），需要提取市的部分
+      let cityName = ''
+      if (poi.cityname) {
+        // 优先使用cityname（市级别）
+        cityName = poi.cityname
+      } else if (poi.adname) {
+        // 如果只有adname，尝试提取市的部分
+        // adname格式可能是："XX市XX区"、"XX县"、"XX区"等
+        // 如果adname包含"市"，提取市的部分
+        if (poi.adname.includes('市')) {
+          const cityMatch = poi.adname.match(/(.+?市)/)
+          if (cityMatch) {
+            cityName = cityMatch[1]
+          } else {
+            // 如果无法匹配，使用adname（可能是"XX市"格式）
+            cityName = poi.adname
+          }
+        } else {
+          // 如果是县或区，无法确定市，使用adname但去掉县/区后缀
+          // 注意：这种情况下可能不准确，但至少有个值
+          cityName = poi.adname.replace(/县$/, '').replace(/区$/, '')
+        }
+      }
+      // 去掉"市"后缀，统一格式（与Android端保持一致）
+      if (cityName) {
+        cityName = cityName.replace(/市$/, '')
+      }
+      form.city = cityName
+      form.address = poi.address + poi.name
+      ElMessage.success('已找到位置')
+    } else {
+      // 检查是否是API密钥错误
+      if (result && result.info) {
+        if (result.info === 'USERKEY_PLAT_NOMATCH' || result.infocode === '10009') {
+          ElMessage.error({
+            message: 'API密钥类型不匹配！请确保申请的是"Web端（JS API）"类型的密钥，而不是"Web服务"类型。',
+            duration: 5000
+          })
+        } else if (result.info === 'INVALID_USER_SCODE' || result.infocode === '10008') {
+          ElMessage.error({
+            message: '安全密钥无效！请检查安全密钥是否正确配置在 index.html 中。',
+            duration: 5000
+          })
+        } else {
+          ElMessage.error('搜索失败：' + result.info + (result.infocode ? ' (错误代码：' + result.infocode + ')' : ''))
+        }
+      } else {
+        ElMessage.error('未找到相关地点，请尝试其他关键词')
+      }
+    }
+  })
+}
 
 const loadHotel = (id: any) => {
   request.get(`/hotel/detail/${id}`).then((res: any) => {
     Object.assign(form, res.hotel)
+    // 如果有经纬度，在地图上显示
+    if (form.longitude && form.latitude && map) {
+      nextTick(() => {
+        addMarker([form.longitude!, form.latitude!])
+      })
+    }
     if (res.hotel.facilities) {
         facilities.value = res.hotel.facilities.split(',')
     }
@@ -319,5 +530,17 @@ const save = () => {
     font-size: 12px;
     color: #909399;
     margin-top: 5px;
+}
+
+.location-selector {
+    width: 100%;
+}
+
+.location-info {
+    margin-top: 10px;
+}
+
+#map-container {
+    border-radius: 4px;
 }
 </style>

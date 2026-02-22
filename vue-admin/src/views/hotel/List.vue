@@ -80,6 +80,23 @@
             <span>{{ scope.row.favoriteCount ?? 0 }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="tags" label="快捷标签" width="200" align="center">
+          <template #default="scope">
+            <div v-if="scope.row.tags" class="tags-container">
+              <el-tag
+                v-for="(tag, index) in scope.row.tags.split(',')"
+                :key="index"
+                size="small"
+                type="info"
+                effect="plain"
+                style="margin: 2px;"
+              >
+                {{ tag.trim() }}
+              </el-tag>
+            </div>
+            <span v-else class="no-tags">暂无标签</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="300" fixed="right" align="center">
           <template #default="scope">
             <div class="action-buttons">
@@ -313,5 +330,16 @@ onMounted(() => {
     color: #f56c6c;
     font-weight: bold;
     font-size: 14px;
+}
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    min-height: 24px;
+}
+.no-tags {
+    color: #c0c4cc;
+    font-size: 12px;
 }
 </style>
