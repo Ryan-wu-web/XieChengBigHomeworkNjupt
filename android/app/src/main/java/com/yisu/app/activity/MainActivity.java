@@ -157,6 +157,17 @@ public class MainActivity extends AppCompatActivity {
         
         // Load tags from backend
         loadTagsFromBackend();
+        
+        // 我的收藏点击事件
+        findViewById(R.id.cardFavorite).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, FavoriteListActivity.class);
+            startActivity(intent);
+        });
+        
+        // 我的订单点击事件（暂时）
+        findViewById(R.id.cardOrder).setOnClickListener(v -> {
+            Toast.makeText(MainActivity.this, "订单功能开发中...", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void showDatePicker(boolean isCheckIn) {

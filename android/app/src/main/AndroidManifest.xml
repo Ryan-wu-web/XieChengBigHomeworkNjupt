@@ -72,6 +72,9 @@
             android:name=".activity.HotelDetailActivity"
             android:theme="@style/Theme.YisuApp.NoActionBar" />
         <activity android:name=".activity.LocationSearchActivity" />
+        <activity 
+            android:name=".activity.FavoriteListActivity"
+            android:theme="@style/Theme.YisuApp.NoActionBar" />
     </application>
 
 </manifest>

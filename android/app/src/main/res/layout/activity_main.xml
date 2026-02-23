@@ -293,27 +293,35 @@
         android:padding="16dp">
         
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardFavorite"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="80dp"
             app:cardCornerRadius="8dp"
-            android:layout_marginEnd="8dp">
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
              <TextView
                  android:layout_width="match_parent"
                  android:layout_height="match_parent"
-                 android:text="特惠专区\n低至5折"
+                 android:text="我的收藏\n查看收藏"
                  android:gravity="center"
-                 android:background="#E3F2FD"
-                 android:textColor="#1976D2"
+                 android:background="#E8F5E9"
+                 android:textColor="#388E3C"
                  android:textStyle="bold"/>
         </androidx.cardview.widget.CardView>
         
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardOrder"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="80dp"
             app:cardCornerRadius="8dp"
-            android:layout_marginStart="8dp">
+            android:layout_marginStart="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
              <TextView
                  android:layout_width="match_parent"
                  android:layout_height="match_parent"

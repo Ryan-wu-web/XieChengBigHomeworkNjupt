@@ -36,4 +36,27 @@ public interface ApiService {
 
     @GET("hotel/detail/{id}")
     Call<Result<Map<String, Object>>> getHotelDetail(@Path("id") int id);
+
+    // Favorite
+    @POST("favorite/toggle")
+    Call<Result<Map<String, Object>>> toggleFavorite(@Query("hotelId") int hotelId, @Query("userId") int userId);
+
+    @GET("favorite/check")
+    Call<Result<Boolean>> checkFavorite(@Query("hotelId") int hotelId, @Query("userId") int userId);
+
+    @GET("favorite/count")
+    Call<Result<Integer>> getFavoriteCount(@Query("hotelId") int hotelId);
+
+    @GET("favorite/list")
+    Call<Result<List<Map<String, Object>>>> getFavorites(@Query("userId") int userId);
+
+    // Review
+    @GET("review/list")
+    Call<Result<Page<Map<String, Object>>>> getReviews(@Query("hotelId") int hotelId, @Query("pageNum") int pageNum, @Query("pageSize") int pageSize);
+
+    @GET("review/count")
+    Call<Result<Integer>> getReviewCount(@Query("hotelId") int hotelId);
+
+    @GET("review/rating")
+    Call<Result<Double>> getAverageRating(@Query("hotelId") int hotelId);
 }

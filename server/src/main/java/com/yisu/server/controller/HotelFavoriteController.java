@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -40,5 +41,12 @@ public class HotelFavoriteController {
     public Result<Integer> getFavoriteCount(@RequestParam Integer hotelId) {
         Integer count = favoriteService.getFavoriteCountByHotelId(hotelId);
         return Result.success(count);
+    }
+
+    // 获取用户收藏列表
+    @GetMapping("/list")
+    public Result<List<Map<String, Object>>> getFavorites(@RequestParam Integer userId) {
+        List<Map<String, Object>> list = favoriteService.getFavoritesByUserId(userId);
+        return Result.success(list);
     }
 }

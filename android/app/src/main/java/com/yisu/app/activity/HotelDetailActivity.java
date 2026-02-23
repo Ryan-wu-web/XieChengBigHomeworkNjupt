@@ -1,12 +1,16 @@
 package com.yisu.app.activity;
 
 import android.app.DatePickerDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -21,6 +25,7 @@ import com.yisu.app.R;
 import com.yisu.app.adapter.HotelImageAdapter;
 import com.yisu.app.adapter.RoomTypeAdapter;
 import com.yisu.app.model.Hotel;
+import com.yisu.app.model.Page;
 import com.yisu.app.model.Result;
 import com.yisu.app.model.RoomType;
 import com.yisu.app.network.RetrofitClient;
@@ -48,11 +53,18 @@ public class HotelDetailActivity extends AppCompatActivity {
     private ViewPager2 viewPagerImages;
     private TabLayout tabLayoutImages;
     private RecyclerView rvRooms;
+    private RecyclerView rvReviews;
+    private ImageView ivFavorite;
     
     private HotelImageAdapter imageAdapter;
     private RoomTypeAdapter roomAdapter;
+    private ReviewAdapter reviewAdapter;
     private List<String> imageUrls = new ArrayList<>();
     private List<RoomType> roomTypes = new ArrayList<>();
+    private List<Map<String, Object>> reviewList = new ArrayList<>();
+    
+    private int userId;
+    private boolean isFavorited = false;
     
     private Calendar checkInCalendar, checkOutCalendar;
     private SimpleDateFormat dateFormat;
@@ -87,13 +99,20 @@ public class HotelDetailActivity extends AppCompatActivity {
             checkOutCalendar.setTimeInMillis(checkOutMillis);
         }
         
+        // 获取用户ID
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        userId = prefs.getInt("userId", 0);
+
         initViews();
         setupImagePager();
         setupRoomList();
+        setupReviewList();
         updateDateDisplay();
         setupRatingAndCounts(); // 设置评分、点评数、收藏数（随机数据）
         
         loadDetail();
+        loadReviews();
+        checkFavorite();
     }
 
     private void initViews() {
@@ -104,6 +123,8 @@ public class HotelDetailActivity extends AppCompatActivity {
         viewPagerImages = findViewById(R.id.viewPagerImages);
         tabLayoutImages = findViewById(R.id.tabLayoutImages);
         rvRooms = findViewById(R.id.rvRooms);
+        rvReviews = findViewById(R.id.rvReviews);
+        ivFavorite = findViewById(R.id.ivFavorite);
         tvDetailCheckIn = findViewById(R.id.tvDetailCheckIn);
         tvDetailCheckOut = findViewById(R.id.tvDetailCheckOut);
         tvDetailNights = findViewById(R.id.tvDetailNights);
@@ -118,6 +139,9 @@ public class HotelDetailActivity extends AppCompatActivity {
         tvMinPrice = findViewById(R.id.tvMinPrice);
         tvMaxPrice = findViewById(R.id.tvMaxPrice);
         tvRoomTypeCount = findViewById(R.id.tvRoomTypeCount);
+        
+        // 收藏按钮点击事件
+        ivFavorite.setOnClickListener(v -> toggleFavorite());
         
         // 设置日期选择点击事件（TextView和父LinearLayout都可以点击）
         android.view.View.OnClickListener checkInListener = v -> {
@@ -420,6 +444,150 @@ public class HotelDetailActivity extends AppCompatActivity {
             }).attach();
         } else {
             tabLayoutImages.setVisibility(android.view.View.GONE);
+        }
+    }
+
+    private void setupReviewList() {
+        rvReviews.setLayoutManager(new LinearLayoutManager(this));
+        reviewAdapter = new ReviewAdapter(reviewList);
+        rvReviews.setAdapter(reviewAdapter);
+    }
+
+    private void loadReviews() {
+        RetrofitClient.getApiService().getReviews(hotelId, 1, 20).enqueue(new Callback<Result<Page<Map<String, Object>>>>() {
+            @Override
+            public void onResponse(Call<Result<Page<Map<String, Object>>>> call, Response<Result<Page<Map<String, Object>>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Result<Page<Map<String, Object>>> result = response.body();
+                    if ("200".equals(result.code) && result.data != null && result.data.records != null) {
+                        reviewList.clear();
+                        reviewList.addAll(result.data.records);
+                        reviewAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<Page<Map<String, Object>>>> call, Throwable t) {
+                // 静默处理
+            }
+        });
+    }
+
+    private void checkFavorite() {
+        if (userId == 0) return;
+        RetrofitClient.getApiService().checkFavorite(hotelId, userId).enqueue(new Callback<Result<Boolean>>() {
+            @Override
+            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Result<Boolean> result = response.body();
+                    if ("200".equals(result.code) && result.data != null) {
+                        isFavorited = result.data;
+                        updateFavoriteButton();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<Boolean>> call, Throwable t) {
+                // 静默处理
+            }
+        });
+    }
+
+    private void toggleFavorite() {
+        if (userId == 0) {
+            Toast.makeText(this, "请先登录", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        RetrofitClient.getApiService().toggleFavorite(hotelId, userId).enqueue(new Callback<Result<Map<String, Object>>>() {
+            @Override
+            public void onResponse(Call<Result<Map<String, Object>>> call, Response<Result<Map<String, Object>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Result<Map<String, Object>> result = response.body();
+                    if ("200".equals(result.code) && result.data != null) {
+                        Object isFavObj = result.data.get("isFavorited");
+                        if (isFavObj != null) {
+                            isFavorited = (Boolean) isFavObj;
+                            updateFavoriteButton();
+                            Object msgObj = result.data.get("message");
+                            if (msgObj != null) {
+                                Toast.makeText(HotelDetailActivity.this, (String) msgObj, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<Map<String, Object>>> call, Throwable t) {
+                Toast.makeText(HotelDetailActivity.this, "操作失败: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateFavoriteButton() {
+        if (isFavorited) {
+            ivFavorite.setImageResource(android.R.drawable.btn_star_big_on);
+        } else {
+            ivFavorite.setImageResource(android.R.drawable.btn_star_big_off);
+        }
+    }
+
+    private class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
+        private List<Map<String, Object>> list;
+
+        ReviewAdapter(List<Map<String, Object>> list) {
+            this.list = list;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_review, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            Map<String, Object> review = list.get(position);
+            
+            Object userIdObj = review.get("userId");
+            holder.tvUsername.setText("用户" + (userIdObj != null ? userIdObj : ""));
+            
+            Object contentObj = review.get("content");
+            holder.tvContent.setText(contentObj != null ? (String) contentObj : "");
+            
+            Object ratingObj = review.get("rating");
+            if (ratingObj != null) {
+                float rating = ((Number) ratingObj).floatValue();
+                holder.rbRating.setRating(rating);
+            }
+            
+            Object timeObj = review.get("createTime");
+            if (timeObj != null) {
+                holder.tvTime.setText(timeObj.toString().substring(0, 10));
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+
+        class ViewHolder extends RecyclerView.ViewHolder {
+            TextView tvUsername, tvContent, tvTime;
+            RatingBar rbRating;
+            ImageView ivAvatar;
+
+            ViewHolder(View itemView) {
+                super(itemView);
+                tvUsername = itemView.findViewById(R.id.tvUsername);
+                tvContent = itemView.findViewById(R.id.tvContent);
+                tvTime = itemView.findViewById(R.id.tvTime);
+                rbRating = itemView.findViewById(R.id.rbRating);
+                ivAvatar = itemView.findViewById(R.id.ivAvatar);
+            }
         }
     }
 
