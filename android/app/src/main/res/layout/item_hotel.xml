@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginTop="4dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp"
-    android:background="#FFFFFF">
+    android:layout_marginBottom="16dp"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"
+    android:layout_marginTop="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true"
+    android:background="#FFFFFF"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,11 +22,11 @@
         <!-- 左侧封面图片 -->
         <ImageView
             android:id="@+id/ivHotelImage"
-            android:layout_width="140dp"
-            android:layout_height="140dp"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_background"
-            android:background="#E0E0E0"/>
+            android:background="#F5F5F5"/>
 
         <!-- 右侧信息区域 -->
         <LinearLayout
@@ -43,7 +45,7 @@
                 android:text="酒店名称"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#333333"
+                android:textColor="@color/text_primary"
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:lineSpacingMultiplier="1.2"/>
@@ -64,7 +66,7 @@
                     android:text="4.6 很好"
                     android:textSize="12sp"
                     android:textColor="#FFFFFF"
-                    android:background="#2196F3"
+                    android:background="@color/primary_blue"
                     android:paddingStart="6dp"
                     android:paddingEnd="6dp"
                     android:paddingTop="2dp"
@@ -77,17 +79,16 @@
                     android:layout_height="wrap_content"
                     android:text="811点评"
                     android:textSize="12sp"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_secondary"
                     android:layout_marginStart="8dp"/>
 
-                <!-- 收藏数 -->
                 <TextView
                     android:id="@+id/tvFavoriteCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3296收藏"
                     android:textSize="12sp"
-                    android:textColor="#666666"
+                    android:textColor="@color/text_secondary"
                     android:layout_marginStart="8dp"/>
             </LinearLayout>
 
@@ -98,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:text="近上海国际赛车场·上海保利大剧院 服务热情,环境干净整洁卫生舒适"
                 android:textSize="12sp"
-                android:textColor="#666666"
+                android:textColor="@color/text_secondary"
                 android:layout_marginTop="6dp"
                 android:maxLines="2"
                 android:ellipsize="end"
@@ -137,16 +138,15 @@
                         android:layout_height="wrap_content"
                         android:text="¥193"
                         android:textSize="12sp"
-                        android:textColor="#999999"
+                        android:textColor="@color/text_hint"
                         android:layout_marginEnd="4dp"
                         android:visibility="gone"/>
 
-                    <!-- 现价 -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="¥"
-                        android:textColor="#2196F3"
+                        android:textColor="@color/primary_blue"
                         android:textSize="14sp"
                         android:textStyle="bold"/>
                     <TextView
@@ -154,14 +154,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="183"
-                        android:textColor="#2196F3"
+                        android:textColor="@color/primary_blue"
                         android:textSize="20sp"
                         android:textStyle="bold"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="起"
-                        android:textColor="#999999"
+                        android:textColor="@color/text_hint"
                         android:textSize="12sp"
                         android:layout_marginStart="2dp"/>
                 </LinearLayout>

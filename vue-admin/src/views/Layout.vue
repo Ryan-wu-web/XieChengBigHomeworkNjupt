@@ -9,9 +9,9 @@
         <el-menu
           router
           :default-active="$route.path"
-          background-color="#304156"
-          text-color="#bfcbd9"
-          active-text-color="#409EFF"
+          background-color="#1F2937"
+          text-color="#E5E7EB"
+          active-text-color="#1E88E5"
           class="el-menu-vertical"
         >
           <el-menu-item index="/dashboard">
@@ -190,8 +190,18 @@ const handleCommand = (command: string) => {
 }
 
 .main-content {
-  background-color: #f0f2f5;
-  padding: 20px;
+  background-color: #F3F4F6;
+  padding: 24px;
+}
+
+/* 卡片动画 */
+.el-card {
+  transition: all 0.3s ease;
+}
+
+.el-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Transitions */

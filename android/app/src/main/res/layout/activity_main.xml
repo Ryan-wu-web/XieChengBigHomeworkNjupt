@@ -11,7 +11,7 @@
         android:id="@+id/viewPagerBanner"
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        android:background="#2196F3"
+        android:background="@color/primary_blue"
         app:layout_constraintTop_toTopOf="parent" />
     
     <!-- User Info and Logout Button -->
@@ -276,10 +276,10 @@
                 android:layout_height="56dp"
                 android:text="查找酒店"
                 android:layout_marginTop="20dp"
-                android:backgroundTint="#2196F3"
+                android:backgroundTint="@color/primary_blue"
                 android:textColor="#FFF"
                 android:textStyle="bold"
-                app:cornerRadius="8dp"/>
+                app:cornerRadius="12dp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
     

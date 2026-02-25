@@ -97,6 +97,20 @@ public class FavoriteListActivity extends AppCompatActivity {
                             } else {
                                 llEmpty.setVisibility(View.GONE);
                                 rvFavorites.setVisibility(View.VISIBLE);
+                                
+                                rvFavorites.post(() -> {
+                                    for (int i = 0; i < rvFavorites.getChildCount(); i++) {
+                                        View child = rvFavorites.getChildAt(i);
+                                        child.setAlpha(0f);
+                                        child.setTranslationY(50f);
+                                        child.animate()
+                                            .alpha(1f)
+                                            .translationY(0f)
+                                            .setDuration(300)
+                                            .setStartDelay(i * 50)
+                                            .start();
+                                    }
+                                });
                             }
                         }
                     }

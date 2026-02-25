@@ -297,13 +297,31 @@ onMounted(() => {
     align-items: center;
 }
 .hotel-cover {
-    width: 80px;
-    height: 60px;
-    border-radius: 4px;
+    width: 90px;
+    height: 68px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin-right: 12px;
     flex-shrink: 0;
     background: #f0f0f0;
+    transition: all 0.3s ease;
+    animation: fadeIn 0.5s ease;
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.hotel-cover:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
 .info-text {
     flex: 1;
     overflow: hidden;
@@ -341,5 +359,75 @@ onMounted(() => {
 .no-tags {
     color: #c0c4cc;
     font-size: 12px;
+}
+
+/* 表格行动画 */
+:deep(.el-table__body tr) {
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+:deep(.el-table__body tr:nth-child(1)) {
+    animation-delay: 0.1s;
+}
+
+:deep(.el-table__body tr:nth-child(2)) {
+    animation-delay: 0.2s;
+}
+
+:deep(.el-table__body tr:nth-child(3)) {
+    animation-delay: 0.3s;
+}
+
+:deep(.el-table__body tr:nth-child(4)) {
+    animation-delay: 0.4s;
+}
+
+:deep(.el-table__body tr:nth-child(5)) {
+    animation-delay: 0.5s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 表格行悬停效果 */
+:deep(.el-table__body tr:hover) {
+    background-color: #f5f7fa;
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 按钮点击动画 */
+.el-button {
+    transition: all 0.2s ease;
+}
+
+.el-button:active {
+    transform: scale(0.95);
+}
+
+.el-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 卡片动画 */
+.el-card {
+    transition: all 0.3s ease;
+}
+
+.el-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 </style>
