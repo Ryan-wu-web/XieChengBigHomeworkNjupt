@@ -25,6 +25,15 @@
     <!--存储权限（如果需要）-->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    
+    <!--录音权限（用于语音输入）-->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    
+    <!--悬浮窗权限（用于浮动球）-->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    
+    <!--通知权限（用于Android 13+）-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".YisuApplication"
