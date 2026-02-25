@@ -24,3 +24,9 @@ mybatis-plus:
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
+ai:
+  zhipu:
+    api-key: 34d3b132ecaa4d6ab1cbc9a3e0c2f8b8.GN6o4XELNzF9IQ1S
+    model: glm-4.7
+    endpoint: https://open.bigmodel.cn/api/paas/v4/chat/completions
+    timeout: 30000

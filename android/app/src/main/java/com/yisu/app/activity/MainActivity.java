@@ -17,6 +17,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.yisu.app.R;
 import com.yisu.app.adapter.BannerAdapter;
+import com.yisu.app.ai.dialog.AIChatDialog;
+import com.yisu.app.ai.floating.FloatingAIButton;
 import com.yisu.app.model.Banner;
 import com.yisu.app.model.Result;
 import com.yisu.app.network.ApiService;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private String selectedPriceRange = null;
     private String selectedTag = null;
     private String selectedCity = "北京"; // 默认城市
+    private FloatingAIButton floatingAIButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +171,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.cardOrder).setOnClickListener(v -> {
             Toast.makeText(MainActivity.this, "订单功能开发中...", Toast.LENGTH_SHORT).show();
         });
+        
+        // 初始化AI助手浮动球
+        initAIAssistant();
     }
 
     private void showDatePicker(boolean isCheckIn) {
@@ -370,6 +376,55 @@ public class MainActivity extends AppCompatActivity {
             chipGroupTags.addView(chip);
         }
     }
+
+    /**
+     * 退出登录
+     */
+    private void logout() {
+        // 清除登录信息
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.apply();
+        
+        // 跳转到登录页面
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+        
+        Toast.makeText(this, "已退出登录", Toast.LENGTH_SHORT).show();
+    }
+    
+    /**
+     * 初始化AI助手浮动球
+     */
+    private void initAIAssistant() {
+        floatingAIButton = new FloatingAIButton(this);
+        floatingAIButton.setOnFloatingButtonClickListener(() -> {
+            AIChatDialog dialog = new AIChatDialog(MainActivity.this);
+            dialog.show();
+        });
+        
+        // 检查悬浮窗权限
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            if (!android.provider.Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+                intent.setData(android.net.Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 1001);
+            } else {
+                showFloatingButton();
+            }
+        } else {
+            showFloatingButton();
+        }
+    }
+    
+    private void showFloatingButton() {
+        if (!floatingAIButton.isShowing()) {
+            floatingAIButton.show();
+        }
+    }
     
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -390,27 +445,24 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 android.util.Log.w("MainActivity", "data 为 null");
             }
+        } else if (requestCode == 1001) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                if (android.provider.Settings.canDrawOverlays(this)) {
+                    showFloatingButton();
+                } else {
+                    Toast.makeText(this, "需要悬浮窗权限才能使用AI助手", Toast.LENGTH_SHORT).show();
+                }
+            }
         } else {
             android.util.Log.w("MainActivity", "结果码不匹配或失败");
         }
     }
-
-    /**
-     * 退出登录
-     */
-    private void logout() {
-        // 清除登录信息
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.clear();
-        editor.apply();
-        
-        // 跳转到登录页面
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-        
-        Toast.makeText(this, "已退出登录", Toast.LENGTH_SHORT).show();
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (floatingAIButton != null && floatingAIButton.isShowing()) {
+            floatingAIButton.hide();
+        }
     }
 }
