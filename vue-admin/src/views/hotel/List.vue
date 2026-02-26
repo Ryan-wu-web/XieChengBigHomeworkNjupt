@@ -192,8 +192,11 @@ const loadData = () => {
   }
   
   request.get(url, { params: query }).then((res: any) => {
-    tableData.value = res.records
-    total.value = res.total
+    console.log('Hotel list response:', res)
+    if (res && res.data) {
+      tableData.value = res.data.records
+      total.value = res.data.total
+    }
   }).finally(() => loading.value = false)
 }
 

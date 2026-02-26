@@ -51,10 +51,10 @@ const login = () => {
   }
   loading.value = true
   request.post('/user/login', form).then((res: any) => {
-    // res is LoginResult { token, user }
-    if (res.token && res.user) {
-        localStorage.setItem('token', res.token)
-        localStorage.setItem('user', JSON.stringify(res.user))
+    // res is Result<LoginResult> { code, msg, data: { token, user } }
+    if (res.data && res.data.token && res.data.user) {
+        localStorage.setItem('token', res.data.token)
+        localStorage.setItem('user', JSON.stringify(res.data.user))
         ElMessage.success('登录成功')
         router.push('/dashboard')
     } else {

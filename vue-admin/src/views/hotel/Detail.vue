@@ -399,32 +399,35 @@ const searchLocation = () => {
 
 const loadHotel = (id: any) => {
   request.get(`/hotel/detail/${id}`).then((res: any) => {
-    Object.assign(form, res.hotel)
-    // 如果有经纬度，在地图上显示
-    if (form.longitude && form.latitude && map) {
-      nextTick(() => {
-        addMarker([form.longitude!, form.latitude!])
-      })
-    }
-    if (res.hotel.facilities) {
-        facilities.value = res.hotel.facilities.split(',')
-    }
-    if (res.hotel.tags) {
-        tagsList.value = res.hotel.tags.split(',')
-    }
-    // Handle images
-    if (res.hotel.images) {
-        try {
-            const imgs = JSON.parse(res.hotel.images)
-            fileList.value = imgs.map((url: string) => ({ name: 'img', url }))
-        } catch (e) {
-            // fallback if not json
-            if(res.hotel.images.includes(',')) {
-                 fileList.value = res.hotel.images.split(',').map((url: string) => ({ name: 'img', url }))
-            } else {
-                 fileList.value = [{ name: 'img', url: res.hotel.images }]
-            }
-        }
+    console.log('Hotel detail response:', res)
+    if (res && res.data && res.data.hotel) {
+      Object.assign(form, res.data.hotel)
+      // 如果有经纬度，在地图上显示
+      if (form.longitude && form.latitude && map) {
+        nextTick(() => {
+          addMarker([form.longitude!, form.latitude!])
+        })
+      }
+      if (res.data.hotel.facilities) {
+          facilities.value = res.data.hotel.facilities.split(',')
+      }
+      if (res.data.hotel.tags) {
+          tagsList.value = res.data.hotel.tags.split(',')
+      }
+      // Handle images
+      if (res.data.hotel.images) {
+          try {
+              const imgs = JSON.parse(res.data.hotel.images)
+              fileList.value = imgs.map((url: string) => ({ name: 'img', url }))
+          } catch (e) {
+              // fallback if not json
+              if(res.data.hotel.images.includes(',')) {
+                   fileList.value = res.data.hotel.images.split(',').map((url: string) => ({ name: 'img', url }))
+              } else {
+                   fileList.value = [{ name: 'img', url: res.data.hotel.images }]
+              }
+          }
+      }
     }
   })
 }

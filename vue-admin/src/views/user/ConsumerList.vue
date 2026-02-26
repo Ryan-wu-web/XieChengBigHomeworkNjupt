@@ -168,8 +168,8 @@ const rules = reactive<FormRules>({
 const loadData = () => {
   loading.value = true
   request.get('/user/admin/consumer-list', { params: query }).then((res: any) => {
-    tableData.value = res.records
-    total.value = res.total
+    tableData.value = res.data.records
+    total.value = res.data.total
   }).catch((error: any) => {
     ElMessage.error('加载失败：' + (error.message || '未知错误'))
   }).finally(() => {

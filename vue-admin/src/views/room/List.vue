@@ -277,8 +277,16 @@ const loadData = () => {
     loading.value = true
     // Get hotel name first
     request.get(`/hotel/detail/${hotelId}`).then((res: any) => {
-        hotelName.value = res.hotel.name
-        tableData.value = res.rooms
+        console.log('Response data:', res)
+        if (res && res.data && res.data.hotel) {
+            hotelName.value = res.data.hotel.name
+            tableData.value = res.data.rooms || []
+        } else {
+            ElMessage.error('获取酒店信息失败')
+        }
+    }).catch((error: any) => {
+        console.error('Error loading data:', error)
+        ElMessage.error('加载数据失败，请重试')
     }).finally(() => loading.value = false)
 }
 
@@ -404,23 +412,35 @@ const save = () => {
     form.breakfastDishes = breakfastDishesList.value.join(',')
     form.breakfastTime = breakfastTimeRange.value && breakfastTimeRange.value.length === 2 ? `${breakfastTimeRange.value[0]}-${breakfastTimeRange.value[1]}` : ''
 
-    request.post('/room/save', form).then(() => {
+    request.post('/room/save', form).then((res: any) => {
+        console.log('Save room response:', res)
         ElMessage.success('保存成功')
         dialogVisible.value = false
         loadData()
+    }).catch((error: any) => {
+        console.error('Error saving room:', error)
+        ElMessage.error('保存失败，请重试')
     })
 }
 
 const toggleStatus = (row: any) => {
-    request.post('/room/save', row).then(() => {
+    request.post('/room/save', row).then((res: any) => {
+        console.log('Toggle status response:', res)
         ElMessage.success('已更新上架状态')
+    }).catch((error: any) => {
+        console.error('Error toggling status:', error)
+        ElMessage.error('更新状态失败，请重试')
     })
 }
 
 const deleteRoom = (id: number) => {
-    request.delete(`/room/${id}`).then(() => {
+    request.delete(`/room/${id}`).then((res: any) => {
+        console.log('Delete room response:', res)
         ElMessage.success('删除成功')
         loadData()
+    }).catch((error: any) => {
+        console.error('Error deleting room:', error)
+        ElMessage.error('删除失败，请重试')
     })
 }
 

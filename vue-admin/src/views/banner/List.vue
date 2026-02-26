@@ -164,7 +164,7 @@ const uploadHeaders = ref({
 const loadData = () => {
   loading.value = true
   request.get('/banner/admin/list').then((res: any) => {
-    tableData.value = res
+    tableData.value = res.data || []
     // 加载酒店名称
     loadHotelNames()
   }).catch((error: any) => {
@@ -178,7 +178,7 @@ const loadHotelNames = async () => {
   try {
     const hotels = await request.get('/hotel/admin/list', { params: { pageNum: 1, pageSize: 1000 } })
     const hotelMap = new Map()
-    hotels.records.forEach((hotel: any) => {
+    (hotels.data?.records || []).forEach((hotel: any) => {
       hotelMap.set(hotel.id, hotel.name)
     })
     tableData.value.forEach((banner: any) => {
@@ -197,7 +197,7 @@ const searchHotels = async (query: string) => {
       const res = await request.get('/hotel/admin/list', {
         params: { pageNum: 1, pageSize: 50, status: 1 }
       })
-      hotelOptions.value = res.records || []
+      hotelOptions.value = res.data?.records || []
     } catch (error: any) {
       console.error('加载酒店列表失败', error)
     } finally {
@@ -210,7 +210,7 @@ const searchHotels = async (query: string) => {
     const res = await request.get('/hotel/admin/list', {
       params: { pageNum: 1, pageSize: 20, name: query }
     })
-    hotelOptions.value = res.records || []
+    hotelOptions.value = res.data?.records || []
   } catch (error: any) {
     ElMessage.error('搜索酒店失败：' + (error.message || '未知错误'))
   } finally {
@@ -246,7 +246,7 @@ const handleEdit = (row: any) => {
   // 加载当前酒店信息
   searchHotels('')
   request.get('/hotel/admin/list', { params: { pageNum: 1, pageSize: 1000 } }).then((res: any) => {
-    const hotel = res.records.find((h: any) => h.id === row.hotelId)
+    const hotel = (res.data?.records || []).find((h: any) => h.id === row.hotelId)
     if (hotel) {
       hotelOptions.value = [hotel]
     }

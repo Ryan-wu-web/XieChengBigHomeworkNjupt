@@ -19,13 +19,15 @@ request.interceptors.request.use(config => {
 
 request.interceptors.response.use(response => {
   let res = response.data
+  console.log('Response:', res)
   if (res.code === '200') {
-    return res.data
+    return res
   } else {
     ElMessage.error(res.msg || 'System Error')
     return Promise.reject(res.msg || 'System Error')
   }
 }, error => {
+  console.error('Error:', error)
   ElMessage.error(error.message || 'System Error')
   return Promise.reject(error)
 })
