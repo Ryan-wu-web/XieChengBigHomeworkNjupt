@@ -7,6 +7,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+/**
+ * 把 JwtUtils 注册为 Spring 容器中的单例组件（Bean），
+ * 使得其他类可以通过 @Autowired 注入并复用生成/解析 JWT 的能力。
+ */
 @Component
 public class JwtUtils {
 

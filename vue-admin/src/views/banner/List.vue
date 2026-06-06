@@ -177,8 +177,8 @@ const loadData = () => {
 const loadHotelNames = async () => {
   try {
     const hotels = await request.get('/hotel/admin/list', { params: { pageNum: 1, pageSize: 1000 } })
-    const hotelMap = new Map()
-    (hotels.data?.records || []).forEach((hotel: any) => {
+    const hotelMap = new Map<number, string>()
+    ;(hotels.data?.records || []).forEach((hotel: any) => {
       hotelMap.set(hotel.id, hotel.name)
     })
     tableData.value.forEach((banner: any) => {
